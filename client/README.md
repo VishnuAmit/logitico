@@ -1,8 +1,19 @@
-# React + Vite
+Steps to setup
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+1) add clerk key in this format 
 
-Currently, two official plugins are available:
+VITE_CLERK_PUBLISHABLE_KEY=xxxxxxxxxxxx
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+to .env.local
+
+2) open client dir in terminal and paste
+
+```
+yarn
+```
+
+3) to run the frontend enter
+
+```
+yarn run dev
+```
