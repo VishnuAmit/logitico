@@ -2,47 +2,69 @@ require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
 const mongoose = require('mongoose');
-const http = require('http');
+const User = require('./models/user'); // Ensure the correct path to your User model
 const app = express();
-const server = http.createServer(app);
-const { Server } = require('socket.io');
-const io = new Server(server, {
-  cors: {
-    origin: '*',
-  }
-});
+
 const PORT = process.env.PORT || 4000;
 
-const fetchMessages = require('./routes/fetchMessages');
-const postMessages = require('./routes/postMessages');
-const transporterList = require('./routes/fetchTransportersList');
-const orderList = require('./routes/fetchOrderList');
-const postOrderMessages = require('./routes/postOrderMessages');
-const pay = require('./routes/pay');
-
+// Middleware
 app.use(cors());
 app.use(express.json());
 
-
-app.get('/', (req, res) => {
-  res.send('Server up and running');
-});
-
-app.use('/api/', fetchMessages);
-app.use('/api/', postMessages);
-app.use('/api/', transporterList);
-app.use('/api/', orderList);
-app.use('/api/', postOrderMessages);
-app.use('/api/', pay);
-
-
-const mongo = async () => await mongoose.connect(process.env.MONGO_DB);
+// MongoDB connection
+const mongo = async () => {
+  try {
+    await mongoose.connect(process.env.MONGO_DB, {
+      useNewUrlParser: true,
+      useUnifiedTopology: true,
+    });
+    console.log('MongoDB Connected');
+  } catch (err) {
+    console.error('MongoDB connection error:', err);
+    process.exit(1); // Exit the process if the connection fails
+  }
+};
 
 mongo().then(() => {
-  console.log('MongoDB Connected');
-  server.listen(PORT, () => {
+  app.listen(PORT, () => {
     console.log(`Server is running on port ${PORT}`);
   });
-}).catch((err) => {
-  console.log(err);
+});
+
+app.get('/', (req, res) => { 
+  res.send('Hello World');
+});
+
+// Route to check if the user exists
+app.post('/api/checkUser', async (req, res) => {
+  const { clerkId } = req.body;
+  console.log('Checking user:', clerkId);
+  try {
+    const user = await User.findOne({ clerkId });
+    if (user) {
+      return res.status(200).json({ exists: true, user });
+    } else {
+      return res.status(404).json({ exists: false });
+    }
+  } catch (error) {
+    console.error('Error checking user:', error);
+    return res.status(500).json({ error: 'Internal Server Error' });
+  }
+});
+
+// Route for onboarding a user
+app.post('/api/onboarding', async (req, res) => {
+  const userData = req.body;
+  console.log('Onboarding data received:', userData);
+  
+  const newUser = new User(userData); // Create a new user instance
+
+  try {
+    await newUser.save();
+    console.log('User onboarded:', newUser);
+    return res.status(201).json({ message: 'User onboarded successfully!' });
+  } catch (error) {
+    console.error('Error onboarding user:', error);
+    return res.status(500).json({ error: 'Error onboarding user', details: error.message });
+  }
 });
