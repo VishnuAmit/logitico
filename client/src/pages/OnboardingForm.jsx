@@ -1,13 +1,13 @@
 import React, { useState, useEffect, useContext } from 'react';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import axios from 'axios'; // Import Axios
+import { useUser } from '@clerk/clerk-react';
 import { AppContext } from '../context/AppContext';
 
 const OnboardingForm = () => {
-  const { user } = useContext(AppContext);
+  const { user } = useUser();
   const [formData, setFormData] = useState({
     displayName: '',
-    email: '',
     role: '',
     country: '',
     address: '',
@@ -16,16 +16,18 @@ const OnboardingForm = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
+    console.log('Submitting onboarding data:', user);
     // Set additional user data
     const dataToSubmit = { 
       ...formData, 
       clerkId: user?.id, 
-      email: user?.email 
+      email: user?.primaryEmailAddress?.emailAddress,
+      phone: user?.primaryPhoneNumber?.phoneNumber 
     };
 
     try {
       // Send the data to the server using Axios
+      console.log('Submitting onboarding data:', dataToSubmit);
       const response = await axios.post('http://localhost:4000/api/onboarding', dataToSubmit);
       console.log('Response from server:', response.data.message);
     } catch (error) {

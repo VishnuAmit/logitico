@@ -41,10 +41,11 @@ app.post('/api/checkUser', async (req, res) => {
   console.log('Checking user:', clerkId);
   try {
     const user = await User.findOne({ clerkId });
+    console.log(user);
     if (user) {
       return res.status(200).json({ exists: true, user });
     } else {
-      return res.status(404).json({ exists: false });
+      return res.status(200).json({ exists: false });
     }
   } catch (error) {
     console.error('Error checking user:', error);
@@ -56,8 +57,8 @@ app.post('/api/checkUser', async (req, res) => {
 app.post('/api/onboarding', async (req, res) => {
   const userData = req.body;
   console.log('Onboarding data received:', userData);
-  
-  const newUser = new User(userData); // Create a new user instance
+  const n = {displayName: userData.displayName, email: userData.email, clerkId: userData.clerkId, role: userData.role, country: userData.country, phone: userData.phone, address: userData.address, pincode: userData.pincode};
+  const newUser = new User(n); // Create a new user instance
 
   try {
     await newUser.save();
