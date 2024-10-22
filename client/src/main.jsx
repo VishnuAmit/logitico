@@ -5,7 +5,7 @@ import { AppProvider } from "./context/AppContext.jsx";
 
 import { ClerkProvider } from "@clerk/clerk-react";
 // Import your publishable key
-const PUBLISHABLE_KEY = "pk_test_dGVuZGVyLXRhcGlyLTI3LmNsZXJrLmFjY291bnRzLmRldiQ"
+const PUBLISHABLE_KEY = "_your_key"
 
 
 if (!PUBLISHABLE_KEY) {
